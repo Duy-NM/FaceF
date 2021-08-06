@@ -8,7 +8,7 @@ Requires python>=3.6, tensorflow2
 pip install facef
 ```
 # To use
-## 1. Detection
+## 1. Face detection
 
 ```py
 import cv2
@@ -23,7 +23,7 @@ for box in boxes:
 cv2.imshow('image', img)
 ```
 
-## 2. Extract feature 
+## 2. Face extract feature 
 
 ```py
 import cv2
