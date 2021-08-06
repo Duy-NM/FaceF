@@ -1,7 +1,7 @@
 import cv2
 import sys
-from ..utils import model_utils 
-from ..utils.mtcnntf.utils import detect_face
+from .utils import model_utils 
+from .utils.mtcnntf.utils import detect_face
 import tensorflow as tf
 import numpy as np
 import os
@@ -50,8 +50,8 @@ def ssd_detect(frame, align=False):
 
             face = frame[startY:endY, startX:endX]
             (fH, fW) = face.shape[:2]
-            box = [max(box[0],0), max(box[1],0), min(box[2],h), min(box[3],w)] 
-            boxes.append((box - np.array([t2,t1,t2,t1])).astype("int"))
+            box = (box - np.array([t2,t1,t2,t1])).astype("int")
+            boxes.append([max(box[0],0), max(box[1],0), min(box[2],h), min(box[3],w)])
 
     return dlib_align(frame, boxes) if align is True else np.array(boxes)
 
