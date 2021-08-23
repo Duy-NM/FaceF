@@ -6,7 +6,7 @@ import tensorflow as tf
 
 import sys
 sys.path.append('../')
-from ..utils.mtcnntf.models import PNet, RNet, ONet, load_weights
+from utils.mtcnntf.models import PNet, RNet, ONet, load_weights
 
 
 model_dir = os.path.join(os.path.expanduser('~'), '.duyai/model')
@@ -26,6 +26,11 @@ def load_ssd_model():
         gdown.download('https://drive.google.com/u/0/uc?id=1iO2O5Fuvx_G9VMyCyj3nxGI_WJnRHKci&export=download', model_dir + '/deploy.prototxt', quiet=False)
     
     return cv2.dnn.readNetFromCaffe(model_dir + '/deploy.prototxt', model_dir + '/res10_ssd.caffemodel')
+
+def load_ultra_model():
+    if os.path.exists(model_dir + '/version-RFB-640.onnx') == False:
+        gdown.download('https://drive.google.com/u/0/uc?id=1rY7K-lYrmKSXoPndGXoiipkKfimRK8dF&export=download',  model_dir + '/version-RFB-640.onnx', quiet=False)
+    return cv2.dnn.readNetFromONNX(model_dir + '/version-RFB-640.onnx')
 
 def load_mtcnn_model():
     if os.path.exists(model_dir + '/mtcnn') == False:

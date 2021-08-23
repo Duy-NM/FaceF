@@ -2,7 +2,7 @@
 A library for face recognition, flexible and easy to use. The library uses a lot of models like ssd, mtcnn, facenet .... These models will be downloaded automatically when used for the first time, please make sure your network connection is not blocked to google drive.
 
 # Install
-**FaceF** is available on [pypi.org](https://pypi.org/), if you just want to use it for your project, install it using pip.
+**FaceF** is available on [pypi.org](https://pypi.org/project/facef/), if you just want to use it for your project, install it using pip.
 Requires python>=3.6, tensorflow2
 ```
 pip install facef
@@ -23,7 +23,7 @@ for box in boxes:
 cv2.imshow('image', img)
 ```
 
-## 2. Face extract feature 
+## 2. Face extract feature use Facenet
 
 ```py
 import cv2

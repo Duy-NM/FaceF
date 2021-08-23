@@ -4,7 +4,7 @@ import os
 
 HERE = pathlib.Path(__file__).parent
 
-VERSION = '0.1.3'
+VERSION = '0.1.4'
 PACKAGE_NAME = 'facef'
 AUTHOR = 'Duy Nguyen Manh'
 AUTHOR_EMAIL = 'manhduy160396@email.com'

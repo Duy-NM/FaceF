@@ -1,20 +1,22 @@
 import cv2
 import sys
-from .utils import model_utils 
-from .utils.mtcnntf.utils import detect_face
+from utils import model_utils 
+from utils.mtcnntf.utils import detect_face
+from utils.ultra_light import define_img_size, convert_locations_to_boxes, center_form_to_corner_form, predict
 import tensorflow as tf
 import numpy as np
 import os
 os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
 ssd_model           = None
+ultra_model         = None
 pnet, rnet, onet    = None, None, None
 dlib_hog_model      = None
 dlib_68_landmark    = None
 dlib_cnn_model      = None
 
 
-def ssd_detect(frame, align=False):
+def ssd_detect(frame,threshold=0.7, align=False):
     '''
     input: rgb image
     output: boxes
@@ -44,7 +46,7 @@ def ssd_detect(frame, align=False):
     boxes = []
     for i in range(0, detections.shape[2]):
         confidence = detections[0, 0, i, 2]
-        if confidence > 0.7:
+        if confidence > threshold:
             box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
             (startX, startY, endX, endY) = box.astype("int")
 
@@ -55,6 +57,32 @@ def ssd_detect(frame, align=False):
 
     return dlib_align(frame, boxes) if align is True else np.array(boxes)
 
+input_size = [640,480]
+witdh = input_size[0]
+height = input_size[1]
+priors = define_img_size(input_size)
+
+image_mean = np.array([127, 127, 127])
+image_std = 128.0
+iou_threshold = 0.3
+center_variance = 0.1
+size_variance = 0.2
+
+def ultra_light_detect(frame, threshold=0.9):
+    global ultra_model
+    if ultra_model == None:
+        ultra_model = model_utils.load_ultra_model()
+    rect = cv2.resize(frame, (witdh, height))
+    rect = cv2.cvtColor(rect, cv2.COLOR_BGR2RGB)
+    ultra_model.setInput(cv2.dnn.blobFromImage(rect, 1 / image_std, (witdh, height), 127))
+    boxes, scores = ultra_model.forward(["boxes", "scores"])
+    boxes = np.expand_dims(np.reshape(boxes, (-1, 4)), axis=0)
+    scores = np.expand_dims(np.reshape(scores, (-1, 2)), axis=0)
+    boxes = convert_locations_to_boxes(boxes, priors, center_variance, size_variance)
+    boxes = center_form_to_corner_form(boxes)
+    boxes, labels, probs = predict(frame.shape[1], frame.shape[0], scores, boxes, threshold)
+
+    return np.array(boxes)
 
 def mtcnn_detect(frame, align=False):
     '''
@@ -179,4 +207,4 @@ def test(id_cam=0, func='ssd', align=False, show=True):
 
 
 if __name__ == "__main__":
-    test(show=True, func='mtcnn', align=False)
+    test(id_cam='rtsp://admin:Adm%40c3241g@10.1.18.37:554/Streaming/channels/101cmd', show=True, func='ssd', align=False)
